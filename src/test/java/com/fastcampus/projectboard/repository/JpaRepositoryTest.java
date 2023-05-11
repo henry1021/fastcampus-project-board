@@ -26,18 +26,20 @@ class JpaRepositoryTest {
         this.articleCommentRepository = articleCommentRepository;
     }
 
-    @DisplayName("insert 테스트")
+    @DisplayName("delete 테스트")
     @Test
-    void givenTestData_whenInserting_thenWorksFine() {
+    void givenTestData_whenDeleting_thenWorksFine() {
         //Given
-        long previousCount = articleRepository.count();
+        Article article = articleRepository.findById(1L).orElseThrow();
+        long previousArticleCount = articleRepository.count();
+        long previousArticleCommentCount = articleCommentRepository.count();
+        int deletedCommentsSize = article.getArticleComments().size();
 
         //When
-        Article savedArticle = articleRepository.save(Article.of
-                ("new title", "new content", "new hashtag")
-        );
+        articleRepository.delete(article);
 
         //Then
-        assertThat(articleRepository.count()).isEqualTo(previousCount + 1);
+        assertThat(articleRepository.count()).isEqualTo(previousArticleCount - 1);
+        assertThat(articleCommentRepository.count()).isEqualTo(previousArticleCommentCount - deletedCommentsSize);
     }
 }
